@@ -1,4 +1,4 @@
-# EAD1_Trabalho2
+# Trabalho 2 - Estrutura de Dados 1 (UnB)
 
 ## **Grupo D - Integrantes**
 | Nome | Matrícula |
@@ -10,5 +10,5 @@
 | Lucas Soares Barros | 202017700 |
 | Sidney Fernando Ferreira Lemes | 190037997 |
 
-## **Objetivo**
+## **Descrição**
 Trabalho final para a matéria de Estrutura de Dados 1 da Universidade de Brasília (UnB). O programa consiste na utilização de árvore binária para organização e ordenação de dados de um arquivo.
