@@ -1,59 +1,130 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void menu() {
-    printf("\n_____| Menu de Opções |_____\n\n1. Carregar Arquivo de Dados\n2. Emitir Relatório\n3. Sair\n\n");
-}
+//Função para realizar ação com arquivo
+//Passa nome do arquivo e oq deseja fazer
+FILE *carregaArquivo(char *file_name, char *a){
 
-void carregaDados() {
-    printf("Estou dentro da função CARREGADADOS\n");
-}
+    FILE *arquivo;
 
-void relatorio() {
-    printf("Estou dentro da função RELATORIO\n");
-}
+    arquivo = fopen(file_name, "r");
 
-void sair() {
-    printf("Estou dentro da função SAIR\n");
-}
-
-int main() {   
-    // Declarações
-    int opcao;
-
-    do {
-        menu();
-        printf("Digite a opção que deseja: ");
-        scanf("%d", &opcao);
-
-        switch (opcao)
-        {
-        case 1:
-            carregaDados();
-
-            // printf("Tecle para continuar.\n");
-            // getchar();
-            break;
-
-        case 2:
-            relatorio();
-
-            // printf("Tecle para continuar.\n");
-            // getchar();
-            break;
-
-        case 3:
-            sair();
-            break;
-        
-        default:
-            printf("Por favor, digite uma opção válida.\n");
-
-            // printf("Tecle para continuar.\n");
-            // getchar();
-            break;
+    if(arquivo != NULL){
+        if(a=="r"){
+            printf("Arquivo %s lido com sucesso!\n", file_name);
+        } else if(a=="w"){
+            printf("Arquivo %s criado com sucesso!\n", file_name);
+        } else{
+            printf("Arquivo %s localizado com sucesso!\n", file_name);
         }
-    } while (opcao != 3);
+        
+        return arquivo;
+    }else{
+        printf("Erro ao carregar o arquivo!\n");
+    }
+
+    return 0;
+}
+
+typedef struct no{
+
+    int valor;
+    int linha;
+    struct no *esquerda, *direita;
+
+}No;
+
+No* inserir(No *raiz, int num, int linha){
+    if(raiz == NULL){
+        No *novo = (No*)malloc(sizeof(No));
+        novo->valor = num;
+        novo->linha = linha;
+        novo->esquerda = NULL;
+        novo->direita = NULL;
+        return novo;
+    } else {
+        if(num < raiz->valor)
+            raiz->esquerda = inserir(raiz->esquerda, num, linha);
+        if(num > raiz->valor)
+            raiz->direita = inserir(raiz->direita, num, linha);
+        
+        return raiz;
+    }
+}
+
+void imprimir(No *raiz){
+    if(raiz != NULL){
+        imprimir(raiz->esquerda);
+        printf("%d|%d\n", raiz->valor, raiz->linha);
+        imprimir(raiz->direita);
+    }
+}
+
+No* lerLinhas(FILE *file){
+    char linha[100], *pt;
+    int i, contLinhas = 0;
+    No *raiz = NULL;
     
+    while(fscanf(file, "%s", linha) != EOF){
+        i = 0;
+        pt = strtok(linha, ",");
+        while(pt) {
+            if((contLinhas!=1 && contLinhas!=0) && (i==0))
+                raiz = inserir(raiz, atoi(pt), contLinhas);
+            i++;
+            pt = strtok(NULL, ",");
+        }
+        contLinhas++;
+
+    }
+    printf("\nABP gerada com sucesso\n");
+    return raiz;
+}
+
+
+
+int main()
+{
+
+    int op;
+    No *raiz = NULL;
+    FILE *file;
+    char nome[100];
+    //printf("Digite o nome de arquivo para leitura e a extensao: ");
+    //scanf("%s", nome);
+    file = carregaArquivo("car_data_teste.csv", "r");
+    printf("\n");
+
+    do{
+        printf("O que deseja fazer?\n");
+        printf("0 - Sair\n1 - Carregar arquivo de dados\n2 - Emitir Relatorio\n");
+        scanf("%d", &op);
+
+        switch(op){
+            case 0:
+                printf("Saindo...\n");
+                fclose(file);
+                //Como limpar árvore da memória?
+                break;
+
+            case 1:
+                printf("Carregando arvore...\n");
+                raiz = lerLinhas(file);
+                printf("\n");
+                break;
+            case 2:
+                printf("\nEmitindo relatorio...\n");
+                printf("ID|Linha\n");
+                imprimir(raiz);
+                printf("\n\n");
+                break;
+            default:
+                printf("Opcao invalida!\n\n");
+        }
+
+
+    }while(op != 0);
+
     return 0;
 }
