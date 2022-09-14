@@ -82,6 +82,24 @@ No* lerLinhas(FILE *file){
     return raiz;
 }
 
+No deletarABP(No *raiz)
+{
+    // Caso base: árvore vazia
+    if (raiz == NULL) {
+        return;
+    }
+ 
+    // exclui a subárvore esquerda e direita primeiro (Pós-ordem)
+    deletarABP(raiz->esquerda);
+    deletarABP(raiz->direita);
+    //printf("Deletando nó: %d|%d\n", raiz->valor, raiz->linha);
+
+    // exclui o nó atual após excluir sua subárvore esquerda e direita
+    free(raiz);
+ 
+    // define root como null antes de retornar
+    raiz = NULL;
+}
 
 
 int main()
@@ -90,41 +108,50 @@ int main()
     int op;
     No *raiz = NULL;
     FILE *file;
-    char nome[100];
+    //char nome[100];
     //printf("Digite o nome de arquivo para leitura e a extensao: ");
     //scanf("%s", nome);
     file = carregaArquivo("car_data_teste.csv", "r");
     printf("\n");
 
     do{
-        printf("O que deseja fazer?\n");
-        printf("0 - Sair\n1 - Carregar arquivo de dados\n2 - Emitir Relatorio\n");
+        printf("------------------------------\n     |Menu de Opções|     \n1. Carregar Arquivo de Dados\n2. Emitir Relatório\n3. Sair\n\nDigite a opção que deseja: ");
         scanf("%d", &op);
 
         switch(op){
-            case 0:
-                printf("Saindo...\n");
-                fclose(file);
-                //Como limpar árvore da memória?
-                break;
+            
 
             case 1:
-                printf("Carregando arvore...\n");
+                printf("Carregando ABP...\n");
                 raiz = lerLinhas(file);
                 printf("\n");
                 break;
             case 2:
-                printf("\nEmitindo relatorio...\n");
-                printf("ID|Linha\n");
-                imprimir(raiz);
+                printf("\nEmitindo relatório...\n");
+
+                if(raiz == NULL) {
+                    printf("Arquivo vazio!\n");
+                } else {
+                    printf("ID|Linha\n");
+                    imprimir(raiz);
+                }
+
                 printf("\n\n");
                 break;
+
+            case 3:
+                deletarABP(raiz);
+                printf("Saindo...\n");
+                fclose(file);
+
+                break;
+
             default:
-                printf("Opcao invalida!\n\n");
+                printf("Por favor, digite um opção válida!\n\n");
         }
 
 
-    }while(op != 0);
+    }while(op != 3);
 
     return 0;
 }
