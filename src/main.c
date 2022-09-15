@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 //Função para realizar ação com arquivo
 //Passa nome do arquivo e oq deseja fazer
@@ -25,6 +24,49 @@ FILE *carregaArquivo(char *file_name, char *a){
     }
 
     return 0;
+}
+
+FILE *abreArquivo(){
+    FILE *file = NULL;
+    char *nome;
+    nome = malloc(100*sizeof(char));
+
+    while(file == NULL){
+        printf("\nPara sair digite '3'\nDigite o nome de arquivo para leitura e a extensao: ");
+        scanf("%s", nome);
+        if(comparaString(nome, "3")){
+            return NULL;
+        }
+
+        file = carregaArquivo(nome, "r");
+        
+        if(file == NULL){
+            printf("Nome invalido!\n");
+        }
+    }
+    free(nome);
+    return file;
+}
+
+//Função para comparar duas strings
+int comparaString(char *a, char *b)
+{
+    int i;
+    int resp;
+
+    if (strlen(a) == strlen(b)) {
+        for (i = 0; i < strlen(a); i++) {
+            if (a[i] == b [i]) {
+                resp = 1;
+            } else {
+                return 0;
+            }
+        }
+    } else {
+        resp = 0;
+    }
+
+    return resp;
 }
 
 typedef struct no{
@@ -53,29 +95,27 @@ No* inserir(No *raiz, int num, int linha){
     }
 }
 
-void imprimir(No *raiz){
+void imprimir(No *raiz, FILE *file){
     FILE *arquivo;
     int i=0;
     char *leitura;
     leitura = malloc(100*sizeof(char));
 
-    arquivo = fopen("car_data_teste.csv", "r");
     if(raiz != NULL){
-        imprimir(raiz->esquerda);
+        imprimir(raiz->esquerda, file);
         while (i<=raiz->linha)
         {
-            fscanf(arquivo, "%s", leitura);
+            fscanf(file, "%s", leitura);
             i++;
         }
         printf("%s\n", leitura);
-        //printf("%d|%d\n", raiz->valor, raiz->linha);
-        imprimir(raiz->direita);
+        imprimir(raiz->direita, file);
     }
-    fclose(arquivo);
+    fseek(file, 0, SEEK_SET);
     free(leitura);
 }
 
-No* lerLinhas(FILE *file){
+No* montaABP(FILE *file){
     char *pt;
     char *linha;
     linha = malloc(100*sizeof(char));
@@ -109,7 +149,7 @@ void deletarABP(No *raiz)
     // exclui a subárvore esquerda e direita primeiro (Pós-ordem)
     deletarABP(raiz->esquerda);
     deletarABP(raiz->direita);
-    printf("Deletando nó: %d|%d\n", raiz->valor, raiz->linha);
+    printf("Deletando no: %d|%d\n", raiz->valor, raiz->linha);
 
     // exclui o nó atual após excluir sua subárvore esquerda e direita
     free(raiz);
@@ -119,21 +159,23 @@ void deletarABP(No *raiz)
 }
 
 
+
+
 int main()
 {
 
     int op;
     No *raiz = NULL;
     FILE *file;
-    char *nome;
-    nome = malloc(100*sizeof(char));
-    printf("Digite o nome de arquivo para leitura e a extensao: ");
-    scanf("%s", nome);
-    file = carregaArquivo(nome, "r");
-    printf("\n");
+    
+    file = abreArquivo();
+    if(file == NULL){
+        printf("Saindo...");
+        return 0;
+    }
 
     do{
-        printf("------------------------------\n     |Menu de Opções|     \n1. Carregar Arquivo de Dados\n2. Emitir Relatório\n3. Sair\n\nDigite a opção que deseja: ");
+        printf("------------------------------\n     |Menu de Opcoes|     \n1. Carregar Arquivo de Dados\n2. Emitir Relatorio\n3. Sair\n\nDigite a opcao que deseja: ");
         scanf("%d", &op);
 
         switch(op){
@@ -141,17 +183,17 @@ int main()
 
             case 1:
                 printf("Carregando ABP...\n");
-                raiz = lerLinhas(file);
+                raiz = montaABP(file);
                 printf("\n");
                 break;
             case 2:
-                printf("\nEmitindo relatório...\n");
-
+                
                 if(raiz == NULL) {
                     printf("Arquivo vazio!\n");
                 } else {
+                    printf("\nEmitindo relatorio...\n\n");
                     printf("UserID,Gender,Age,AnnualSalary,Purchased\n");
-                    imprimir(raiz);
+                    imprimir(raiz, file);
                 }
 
                 printf("\n\n");
@@ -161,12 +203,11 @@ int main()
                 deletarABP(raiz);
                 printf("Saindo...\n");
                 fclose(file);
-                free(nome);
 
                 break;
 
             default:
-                printf("Por favor, digite um opção válida!\n\n");
+                printf("Por favor, digite um opcao valida!\n\n");
         }
 
 
