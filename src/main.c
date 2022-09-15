@@ -82,7 +82,7 @@ No* lerLinhas(FILE *file){
     return raiz;
 }
 
-No deletarABP(No *raiz)
+void deletarABP(No *raiz)
 {
     // Caso base: árvore vazia
     if (raiz == NULL) {
@@ -92,7 +92,7 @@ No deletarABP(No *raiz)
     // exclui a subárvore esquerda e direita primeiro (Pós-ordem)
     deletarABP(raiz->esquerda);
     deletarABP(raiz->direita);
-    //printf("Deletando nó: %d|%d\n", raiz->valor, raiz->linha);
+    printf("Deletando nó: %d|%d\n", raiz->valor, raiz->linha);
 
     // exclui o nó atual após excluir sua subárvore esquerda e direita
     free(raiz);
