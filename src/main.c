@@ -54,15 +54,31 @@ No* inserir(No *raiz, int num, int linha){
 }
 
 void imprimir(No *raiz){
+    FILE *arquivo;
+    int i=0;
+    char *leitura;
+    leitura = malloc(100*sizeof(char));
+
+    arquivo = fopen("car_data_teste.csv", "r");
     if(raiz != NULL){
         imprimir(raiz->esquerda);
-        printf("%d|%d\n", raiz->valor, raiz->linha);
+        while (i<=raiz->linha)
+        {
+            fscanf(arquivo, "%s", leitura);
+            i++;
+        }
+        printf("%s\n", leitura);
+        //printf("%d|%d\n", raiz->valor, raiz->linha);
         imprimir(raiz->direita);
     }
+    fclose(arquivo);
+    free(leitura);
 }
 
 No* lerLinhas(FILE *file){
-    char linha[100], *pt;
+    char *pt;
+    char *linha;
+    linha = malloc(100*sizeof(char));
     int i, contLinhas = 0;
     No *raiz = NULL;
     
@@ -79,6 +95,7 @@ No* lerLinhas(FILE *file){
 
     }
     printf("\nABP gerada com sucesso\n");
+    free(linha);
     return raiz;
 }
 
@@ -108,10 +125,11 @@ int main()
     int op;
     No *raiz = NULL;
     FILE *file;
-    //char nome[100];
-    //printf("Digite o nome de arquivo para leitura e a extensao: ");
-    //scanf("%s", nome);
-    file = carregaArquivo("car_data_teste.csv", "r");
+    char *nome;
+    nome = malloc(100*sizeof(char));
+    printf("Digite o nome de arquivo para leitura e a extensao: ");
+    scanf("%s", nome);
+    file = carregaArquivo(nome, "r");
     printf("\n");
 
     do{
@@ -132,7 +150,7 @@ int main()
                 if(raiz == NULL) {
                     printf("Arquivo vazio!\n");
                 } else {
-                    printf("ID|Linha\n");
+                    printf("UserID,Gender,Age,AnnualSalary,Purchased\n");
                     imprimir(raiz);
                 }
 
@@ -143,6 +161,7 @@ int main()
                 deletarABP(raiz);
                 printf("Saindo...\n");
                 fclose(file);
+                free(nome);
 
                 break;
 
