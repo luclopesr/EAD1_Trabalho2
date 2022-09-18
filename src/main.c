@@ -1,5 +1,17 @@
+//Grupo D
+//Fonte de dados: Cars - Purchase Decision Dataset
+//Campo Chave: User ID
+//Nome	                        Matrícula
+//Henrique Pucci da Silva Pinto	202016506
+//João Pedro Costa	            190030801
+//Lucas Caldas Barbosa de Souza	190091606
+//Lucas Lopes Rocha	            202023903
+//Lucas Soares Barros	        202017700
+//Sidney Fernando F. Lemes      190037997
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 //Função para realizar ação com arquivo
 //Passa nome do arquivo e oq deseja fazer
@@ -7,13 +19,11 @@ FILE *carregaArquivo(char *file_name, char *a){
 
     FILE *arquivo;
 
-    arquivo = fopen(file_name, "r");
+    arquivo = fopen(file_name, a);
 
     if(arquivo != NULL){
-        if(a=="r"){
+        if(comparaString("r",a)==0){
             printf("Arquivo %s lido com sucesso!\n", file_name);
-        } else if(a=="w"){
-            printf("Arquivo %s criado com sucesso!\n", file_name);
         } else{
             printf("Arquivo %s localizado com sucesso!\n", file_name);
         }
@@ -34,7 +44,7 @@ FILE *abreArquivo(){
     while(file == NULL){
         printf("\nPara sair digite '3'\nDigite o nome de arquivo para leitura e a extensao: ");
         scanf("%s", nome);
-        if(comparaString(nome, "3")){
+        if(comparaString(nome, "3")==0){
             return NULL;
         }
 
@@ -48,25 +58,20 @@ FILE *abreArquivo(){
     return file;
 }
 
-//Função para comparar duas strings
-int comparaString(char *a, char *b)
+int comparaString(char str1[], char str2[])
 {
-    int i;
-    int resp;
+    int ctr=0;
 
-    if (strlen(a) == strlen(b)) {
-        for (i = 0; i < strlen(a); i++) {
-            if (a[i] == b [i]) {
-                resp = 1;
-            } else {
-                return 0;
-            }
-        }
-    } else {
-        resp = 0;
+    while(str1[ctr]==str2[ctr])
+    {
+        if(str1[ctr]=='\0'||str2[ctr]=='\0')
+            break;
+        ctr++;
     }
-
-    return resp;
+    if(str1[ctr]=='\0' && str2[ctr]=='\0')
+        return 0;
+    else
+        return -1;
 }
 
 typedef struct no{
